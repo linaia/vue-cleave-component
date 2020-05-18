@@ -1,35 +1,40 @@
-import Cleave from 'cleave.js'
+import Cleave from "cleave.js";
 
 export default {
-  name: 'cleave',
+  name: "cleave",
   render(el) {
-    return el('input', {
+    return el("input", {
       attrs: {
-        type: 'text',
-        value: this.value// Cleave.js will set this as initial value
+        type: "text",
+        value: this.value, // Cleave.js will set this as initial value
       },
       on: {
-        blur: this.onBlur
-      }
-    })
+        blur: this.onBlur,
+      },
+    });
   },
   props: {
     value: {
       default: null,
       required: true,
       validator(value) {
-        return value === null || typeof value === 'string' || value instanceof String || typeof value === 'number'
-      }
+        return (
+          value === null ||
+          typeof value === "string" ||
+          value instanceof String ||
+          typeof value === "number"
+        );
+      },
     },
     // https://github.com/nosir/cleave.js/blob/master/doc/options.md
     options: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     // Set this prop to false to emit masked value
     raw: {
       type: Boolean,
-      default: true
+      default: true,
     },
   },
   data() {
@@ -38,7 +43,7 @@ export default {
       cleave: null,
       // callback backup
       onValueChangedFn: null,
-    }
+    };
   },
   mounted() {
     /* istanbul ignore if */
@@ -54,10 +59,10 @@ export default {
      */
     getOptions(options) {
       // Preserve original callback
-      this.onValueChangedFn = options.onValueChanged.bind(this);
+      this.onValueChangedFn = options.onValueChanged;
 
       return Object.assign({}, options, {
-        onValueChanged: this.onValueChanged.bind(this)
+        onValueChanged: this.onValueChanged.bind(this),
       });
     },
     /**
@@ -67,16 +72,16 @@ export default {
      */
     onValueChanged(event) {
       let value = this.raw ? event.target.rawValue : event.target.value;
-      this.$emit('input', value);
+      this.$emit("input", value);
 
       // Call original callback method
-      if (typeof this.onValueChangedFn === 'function') {
-        this.onValueChangedFn.call(this, event)
+      if (typeof this.onValueChangedFn === "function") {
+        this.onValueChangedFn.bind(this).call(this, event);
       }
     },
     onBlur(event) {
-      this.$emit('blur', this.value)
-    }
+      this.$emit("blur", this.value);
+    },
   },
   watch: {
     /**
@@ -89,8 +94,8 @@ export default {
       handler(newOptions) {
         this.cleave.destroy();
         this.cleave = new Cleave(this.$el, this.getOptions(newOptions));
-        this.cleave.setRawValue(this.value)
-      }
+        this.cleave.setRawValue(this.value);
+      },
     },
 
     /**
@@ -108,7 +113,7 @@ export default {
       if (!this.raw && newValue === this.$el.value) return;
       // Lastly set newValue
       this.cleave.setRawValue(newValue);
-    }
+    },
   },
   /**
    * Free up memory
@@ -121,4 +126,4 @@ export default {
     this.cleave = null;
     this.onValueChangedFn = null;
   },
-}
+};
