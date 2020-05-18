@@ -54,10 +54,10 @@ export default {
      */
     getOptions(options) {
       // Preserve original callback
-      this.onValueChangedFn = options.onValueChanged;
+      this.onValueChangedFn = options.onValueChanged.bind(this);
 
       return Object.assign({}, options, {
-        onValueChanged: this.onValueChanged
+        onValueChanged: this.onValueChanged.bind(this)
       });
     },
     /**
